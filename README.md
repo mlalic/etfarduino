@@ -36,6 +36,7 @@ devices.
 For example:
 
     ai = analoginput('etfarduino', 0);
+    addchannel(ai, 0);
     start(ai);
     wait(ai, 2);
     [data, t] = getdata(ai, ai.SampleAcquired);
