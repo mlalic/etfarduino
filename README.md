@@ -22,15 +22,16 @@ For now, the binaries can be found in the Downloads section.
 To use this software follow these steps:
 - Compile and upload the Arduino sketch (EtfArduinoFirmware) using the Arduino IDE;
 - Start the EtfArduinoService.exe application;
-- Register the adaptor in the MATLAB environment by running the command daqregister 'path/to/etfarduino.dll';
+- Register the adaptor in the MATLAB environment by running the command `daqregister 'path/to/etfarduino.dll'`;
 - Run the EtfArduinoConfig application and register the connected Arduino as an acquisition device by clicking the button.
 
 It is now possible to use the connected Arduino device as any other acquisition device, such as MCC or National Instruments
 devices.
 
 For example:
-ai = analoginput('etfarduino', 0);
-start(ai);
-wait(ai, 2);
-[data, t] = getdata(ai, ai.SampleAcquired);
-plot(t, data)
+
+    ai = analoginput('etfarduino', 0);
+    start(ai);
+    wait(ai, 2);
+    [data, t] = getdata(ai, ai.SampleAcquired);
+    plot(t, data)
