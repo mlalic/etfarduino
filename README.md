@@ -49,7 +49,7 @@ For example:
     addchannel(ai, 0);
     start(ai);
     wait(ai, 2);
-    [data, t] = getdata(ai, ai.SampleAcquired);
+    [data, t] = getdata(ai, ai.SamplesAcquired);
     plot(t, data)
 
 Notes
