@@ -6,12 +6,15 @@ A project which allows the use of an Arduino device for data acquisition within 
 It was developed as a part of my Bachelor's thesis which I completed at the Faculty of Electrical Engineering Sarajevo
 (www.etf.unsa.ba/)
 
-The full source code will be published in the following days under an open-source licence.
+The project is published under the MIT license.
 
-For now, the binaries can be found in the Downloads section.
+Download
+--------
+
+The compiled binaries can be found in the [Downloads section](https://github.com/mlalic/etfarduino/downloads).
 
 Components
------------
+----------
 
 The project contains four components which work together to achieve the goal of using Arduino for data acquisition
 from within MATLAB.
@@ -41,3 +44,10 @@ For example:
     wait(ai, 2);
     [data, t] = getdata(ai, ai.SampleAcquired);
     plot(t, data)
+
+Notes
+-----
+
+Currently, only one analog input and analog output channel is supported and they use the A0 pin and digital pin 3, respectively. Analog input and output can work in parallel.
+
+Using the EtfArduinoConfig it is possible to register multiple Arduino boards which are able to perform acquisition tasks in parallel.
