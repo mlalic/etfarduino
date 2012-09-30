@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "etfarduino", "etfarduino\etfarduino.vcproj", "{C5E20A1A-43B5-4FB0-B883-B91F7EE774CA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "etfarduinoPS", "etfarduino\etfarduinoPS.vcproj", "{C47B0D1C-EBCF-42E8-A06F-ACE6111B991C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C5E20A1A-43B5-4FB0-B883-B91F7EE774CA} = {C5E20A1A-43B5-4FB0-B883-B91F7EE774CA}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C5E20A1A-43B5-4FB0-B883-B91F7EE774CA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C5E20A1A-43B5-4FB0-B883-B91F7EE774CA}.Debug|Win32.Build.0 = Debug|Win32
+		{C5E20A1A-43B5-4FB0-B883-B91F7EE774CA}.Release|Win32.ActiveCfg = Release|Win32
+		{C5E20A1A-43B5-4FB0-B883-B91F7EE774CA}.Release|Win32.Build.0 = Release|Win32
+		{C47B0D1C-EBCF-42E8-A06F-ACE6111B991C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C47B0D1C-EBCF-42E8-A06F-ACE6111B991C}.Release|Win32.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

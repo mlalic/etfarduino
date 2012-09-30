@@ -1,0 +1,95 @@
+// etfarduino.idl : IDL source for etfarduino
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (etfarduino.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+import "daqmex.idl";
+
+// Analog input interface
+[
+	object,
+	uuid(A69C8730-50F7-46ab-A011-C32A9623A9B2),
+	dual,
+	helpstring("IetfarduinoAin Interface"),
+	pointer_default(unique)
+]
+interface IetfarduinoAin : IDispatch	//IDispatch interface is not currently implemented..
+{};	
+
+// Analog output
+[
+	object,
+	uuid(26EFD51E-8AC5-4645-8FC8-CECF6E29A710),
+	dual,
+	helpstring("IetfarduinoAout Interface"),
+	pointer_default(unique)
+]
+interface IetfarduinoAout : IDispatch
+{};		
+
+// Digital I/O
+[
+	object,
+	uuid(B7100710-F719-4c12-B847-ABC147B9F847),
+	dual,
+	helpstring("IetfarduinoDio Interface"),
+	pointer_default(unique)
+]
+interface IetfarduinoDio : IUnknown
+{};							
+
+// Library
+[
+	uuid(35C84C74-C1EE-4CE3-9200-675104AB4EEF),
+	version(1.0),
+	helpstring("etfarduino 1.0 Type Library")
+]
+library etfarduinoLib
+{
+	importlib("stdole2.tlb");
+	// Adaptor class
+	[
+		uuid(013D390C-EA84-4d05-907F-15B5903A2952),
+		helpstring("etfarduinoadapt Class")
+	]
+	coclass etfarduinoadapt
+	{
+		[default] interface ImwAdaptor;
+	};
+	// Analog input class
+	[
+		uuid(DF13DDD3-AB25-4470-A5CA-0CFCE6A4E1C5),
+		helpstring("etfarduinoAin Class")
+	]
+	coclass etfarduinoAin
+	{
+		[default] interface IetfarduinoAin;
+		interface ImwDevice;
+		interface ImwInput;
+	};
+	// Analog output class
+	[
+		uuid(F5D02ED5-BAA4-49f1-AE9B-F63F0E82A1C5),
+		helpstring("etfarduinoAout Class")
+	]
+	coclass etfarduinoAout
+	{
+		[default] interface IetfarduinoAout;
+		interface ImwDevice;
+		interface ImwOutput;
+	};
+	// Digital I/O class
+	[
+		uuid(5EF1299B-0EA2-4039-AB34-012FD8F978F2),
+		helpstring("etfarduinoDio Class")
+	]
+	coclass etfarduinoDio
+	{
+		[default] interface IetfarduinoDio;
+		interface ImwDevice;
+		interface ImwDIO;
+	};
+};
