@@ -74,13 +74,11 @@ DWORD WINAPI InstanceThread(LPVOID lpvParam)
 {
 	// First check whether the parameter is valid.
 	if (lpvParam == NULL) {
-		printf( "\nERROR - Pipe Server Failure:\n");
-		printf( "   InstanceThread got an unexpected NULL value in lpvParam.\n");
-		printf( "   InstanceThread exitting.\n");
+		// printf( "\nERROR - Pipe Server Failure:\n");
 		return -1;
 	}
 	// Print verbose messages. In production code, this should be for debugging only.
-	printf("InstanceThread created, receiving and processing messages.\n");
+	// printf("InstanceThread created, receiving and processing messages.\n");
 	// The thread's parameter is a handle to a pipe object instance.
 	std::tr1::shared_ptr<PipeCommunicator> pipe((PipeCommunicator*) lpvParam);
 	// Allocate a buffer for reading the requests.

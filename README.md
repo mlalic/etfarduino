@@ -24,6 +24,13 @@ from within MATLAB.
 3. etfarduino.dll -- a DLL which implements the adaptor COM interface for MATLAB's Data Acquisition Toolbox;
 4. EtfArduinoConfig -- a GUI application for configuring connected Arduino devices for data acquisition.
 
+Compilation
+-----------
+
+The project was developed using Microsoft Visual Studio 2008 IDE and the MS VC++08 compiler for the PC components.
+
+The Arduino IDE and avr-gcc compiler were used for the Arduino firmware application.
+
 Usage
 -----
 
