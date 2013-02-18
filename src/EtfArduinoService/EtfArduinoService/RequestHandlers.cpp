@@ -220,6 +220,22 @@ RequestHandler::Status SetSampleRateRequestHandler::run() {
 		return Status::FAIL;
 }
 // --------------------------
+// Set Input Channels Handler
+// --------------------------
+SetInputChannelsRequestHandler::SetInputChannelsRequestHandler(ArduinoDevice& device,
+														 std::tr1::shared_ptr<PipeCommunicator> pipe,
+														 std::vector<int> const& channels) :
+  RequestHandler(pipe), device(device), channels(channels) {
+	  // Empty
+}
+RequestHandler::Status SetInputChannelsRequestHandler::run() {
+	printf("Setting input channels...\n");
+	if (device.SetInputChannelList(channels))
+		return Status::OK;
+	else
+		return Status::FAIL;
+}
+// --------------------------
 // Send Digital Value Handler
 // --------------------------
 SendDigitalValueRequestHandler::SendDigitalValueRequestHandler(

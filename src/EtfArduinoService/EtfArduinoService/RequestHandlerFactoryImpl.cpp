@@ -99,6 +99,18 @@ std::auto_ptr<RequestHandler> RequestHandlerFactoryImpl::GetRequestHandler(
 			requestHandler = new SetSampleRateRequestHandler(*device, pipe, buffer[2]);
 			break;
 		}
+		case SET_INPUT_CHANNEL_LIST: {
+			ArduinoDevice* device = devices.Find(buffer[1]);
+			if (device == 0)
+				break;
+			// Form a channels vector
+			std::vector<int> channels(buffer[2]);
+			for (size_t i = 0; i < channels.size(); ++i) {
+				channels[i] = buffer[3 + i];
+			}
+			requestHandler = new SetInputChannelsRequestHandler(*device, pipe, channels);
+			break;
+		}
 		case SEND_DIGITAL_VALUE: {
 			ArduinoDevice* device = devices.Find(buffer[1]);
 			if (device == 0)

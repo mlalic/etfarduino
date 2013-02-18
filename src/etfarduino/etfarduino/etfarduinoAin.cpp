@@ -81,7 +81,7 @@ HRESULT CetfarduinoAin::Open(IUnknown* Interface, long ID)
     RETURN_HRESULT(InitHwInfo(
 		VT_UI2,
 		Bits,
-		1,				// maximum number of channels
+		MAX_CHANNELS,	// maximum number of channels
 		SE_INPUT,		// Setting Single Ended input channels
 		Cetfarduinoadapt::ConstructorName,
 		deviceName));
@@ -136,8 +136,30 @@ HRESULT CetfarduinoAin::Open(IUnknown* Interface, long ID)
     pInputType.Attach(_EnginePropRoot, L"InputType");
     pInputType->AddMappedEnumValue(0, L"SingleEnded");
 
+	// TODO: May need to add the ChannelSkewMode enumerated property...
+
     return S_OK;
 } // end of Open()
+
+/**
+ * Calculates the new sample rate based on the user provided `newSampleRate` value
+ * so that it is compatible with the device.
+ */
+void CetfarduinoAin::CalculateSampleRate(double newSampleRate) {
+	int const factor = (static_cast<double>(tickFrequency) / newSampleRate) + 0.5;
+	int const period = 4 * factor;
+	newSampleRate = (1. / period) * 1000 * 1000;	// us -> Hz
+	// Calculate the maximum sample rate which the board allows given the
+	// current number of channels.
+	double const maxSR = m_maxBoardSampleRate / _nChannels;
+	if (newSampleRate > maxSR) {
+		// Issue warning of max sample rate
+		_engine->WarningMessage(CComBSTR("etfarduino: Sample rates higher than 12,500 are not supported by etfarduino."));
+		newSampleRate = maxSR;
+	}
+	// Update the sample rate
+	pSampleRate = newSampleRate;
+}
 
 ////////////////////////////////////////
 // SetProperty()
@@ -155,19 +177,8 @@ STDMETHODIMP CetfarduinoAin::SetProperty(long User, VARIANT* NewValue) {
 			if (pClockSource == CLOCKSOURCE_SOFTWARE) {
 				return CswClockedDevice::SetProperty(User, NewValue);
 			}
-			// :TODO: Channels
 			// Calculate a sample rate which is compatible with the board
-			int const factor = (static_cast<double>(tickFrequency) / newSampleRate) + 0.5;
-			int const period = 4 * factor;
-			newSampleRate = (1. / period) * 1000 * 1000;	// us -> Hz
-
-			if (newSampleRate > 12500) {
-				// Issue warning of max sample rate
-				_engine->WarningMessage(CComBSTR("etfarduino: Sample rates higher than 12,500 are not supported by etfarduino."));
-				newSampleRate = 12500;
-			}
-
-			pSampleRate = newSampleRate;
+			CalculateSampleRate(newSampleRate);
 			*val = pSampleRate;
 		}
 		// ClockSource property
@@ -255,14 +266,16 @@ HRESULT CetfarduinoAin::SetDaqHwInfo() {
 ///////////////////////////////////////////////////////////////////////////////////
 // ChildChange()
 //
-// Metoda koja se poziva pri brisanju, dodavanju ili izmjeni kanala na ai objektu.
+// Called when a channel is added, deleted or changed on the ai object.
 ///////////////////////////////////////////////////////////////////////////////////
 STDMETHODIMP CetfarduinoAin::ChildChange(DWORD typeofchange, NESTABLEPROP* pChan) {
 	if ((typeofchange & CHILDCHANGE_REASON_MASK) == ADD_CHILD) {
-		if (_nChannels == 1) {
-			// Ne moze vise od jednog kanala za sad
-			return Error(CComBSTR("etfarduino: Nije podrzano vise od jednog kanala po AnalogInput objektu"));
+		if (_nChannels == MAX_CHANNELS) {
+			// Maximum number of channels was reached -- unable to add more.
+			return Error(CComBSTR("etfarduino: Maximum number of channels reached, unable to add more."));
 		}
+		// For now the ID given in the addchannel call is ignored.
+		// TODO: Only allow channel IDs 0 and 1...
 	}
 	if (typeofchange & END_CHANGE) {
 		// Update the number of channels that have been added, by querying the engine
@@ -275,7 +288,12 @@ STDMETHODIMP CetfarduinoAin::ChildChange(DWORD typeofchange, NESTABLEPROP* pChan
 			_EngineChannelList->GetChannelStructLocal(i, (NESTABLEPROP**)&aichan);
 			aichan->ConversionOffset = 1 << (Bits - 1);
 		}
-		UpdateChans(true);		// Update all related channel information
+		// Update all related channel information
+		UpdateChans(true);
+		// Update the sample rate given the additional channel
+		if (pClockSource != CLOCKSOURCE_SOFTWARE) {
+			CalculateSampleRate(pSampleRate);
+		}
 	}
 	return S_OK;
 }
@@ -311,7 +329,7 @@ STDMETHODIMP CetfarduinoAin::SetChannelProperty(long UserVal, tagNESTABLEPROP* p
 // This function gets one single data point form one A/D channel, specified..
 //..as a parameter.
 // Function is called by GetSingleValues() of the TADDevice class, which..
-// ..in turn is called by the engine as a responce to the MATLAB command GETSAMPLE.
+// ..in turn is called by the engine as a response to the MATLAB command GETSAMPLE.
 // Function MUST BE MODIFIED by the adaptor programmer.
 /////////////////////////////////////////////////////////////////////////////
 HRESULT CetfarduinoAin::GetSingleValue(int chan, RawDataType *value)
@@ -347,7 +365,7 @@ STDMETHODIMP CetfarduinoAin::Start()
 	if (!service.SetAcquisitionBufferSize(DeviceId, m_engineBufferSamples * _nChannels)) {
 		return CComCoClass<ImwDevice>::Error(CComBSTR("etfarduino: Problem configuring the device for acquisition, buffer size."));
 	}
-	if (!service.SetSampleRate(DeviceId, pSampleRate)) {
+	if (!service.SetSampleRate(DeviceId, pSampleRate * _nChannels)) {
 		return CComCoClass<ImwDevice>::Error(CComBSTR("etfarduino: Problem configuring the device for acquisition, sample rate."));
 	}
 	// :TODO: SetChannelNumber

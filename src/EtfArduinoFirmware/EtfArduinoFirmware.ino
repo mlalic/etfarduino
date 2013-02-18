@@ -24,6 +24,8 @@ volatile boolean start = false;
 volatile boolean toSend = false;
 // Period of sampling the analog input
 LongWrapper period;
+// A bitmask used for changing the input channel
+char channelMask = 0x0;
 // The digital output pin
 int const digitalOutPin = 13;
 // PWM output
@@ -41,7 +43,6 @@ void setup() {
   // Voltage reference AVcc
   ADMUX = 0;
   ADMUX |= (1 << REFS0);
-  // Reading from channel 0, so leave the MUX bits alone
   // Enable the ADC
   ADCSRA |= (1 << ADEN);
   // Set the prescale factor to 16 (100 == ADPS bits)
@@ -137,6 +138,18 @@ void loop() {
         analogWrite(analogOutPin, val);
         return;
       }
+      case '7': {
+        // the read method does not block, so have to manually wait
+        // for all the parameters to arrive
+        while (Serial.available() < 3) ;
+        unsigned char const channels = Serial.read();
+        // This works only for the two channel case, if we were to add
+        // even more input channels, further thought into the bitmask
+        // would have to be given.
+        channelMask = channels - 1;
+        // Ignore the channel ordering for now.
+        Serial.read(); Serial.read();
+      }
     }
   }
 }
@@ -149,5 +162,11 @@ ISR(TIMER1_COMPA_vect)          // timer compare interrupt service routine
     while (bit_is_set(ADCSRA, ADSC)) ;
     analogSample.buffer[0] = ADCL;
     analogSample.buffer[1] = ADCH;
+    // Change the input channel for the next cycle
+    // channelMask is 1 for the two channel case so the
+    // input is toggled between ADC0 and ADC1.
+    // channelMask is 0 for the one channel case so the
+    // input is constant at ADC0.
+    ADMUX ^= (channelMask << MUX0);
     toSend = true;
 }

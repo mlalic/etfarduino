@@ -30,6 +30,7 @@ protected:
 
 	static request_t const SET_ACQUISITION_BUFFER_SIZE	= 10;
 	static request_t const SET_SAMPLE_RATE = 11;
+	static request_t const SET_INPUT_CHANNEL_LIST = 12;
 
 	static request_t const SEND_DIGITAL_VALUE = 20;
 

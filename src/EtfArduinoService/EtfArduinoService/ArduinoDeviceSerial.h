@@ -22,6 +22,7 @@ public:
 	bool StopAcquisition();
 	response_t GetSingleValue();
 	bool SetSampleRate(int sampleRate);
+	bool SetInputChannelList(std::vector<int> const& channels);
 	bool SetBufferSize(int bufferSize);
 	bool SendDigitalValue(int line, int value);
 	bool PutSingleValue(int channel, int value);
@@ -35,10 +36,22 @@ private:
 	TCHAR serialPortName[10];
 	int const tickFrequency;
 	volatile LONG acquisitionActive;
+	int const maxInputChannels;
 	SerialCommunicator serial;
 	CriticalSection cs;
+	
+	// Forbid copying
 	ArduinoDeviceSerial(ArduinoDeviceSerial const&);
 	ArduinoDeviceSerial& operator=(ArduinoDeviceSerial const&);
+
+	// Statics
+	static char const START_ACQUISITION = '1';
+	static char const STOP_ACQUISITION = '2';
+	static char const SET_SAMPLE_RATE = '3';
+	static char const GET_SINGLE_VALUE = '4';
+	static char const SEND_DIGITAL_VALUE = '5';
+	static char const PUT_SINGLE_VALUE = '6';
+	static char const SET_INPUT_CHANNEL_LIST = '7';
 
 };
 

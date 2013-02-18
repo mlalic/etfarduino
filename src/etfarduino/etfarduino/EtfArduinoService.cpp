@@ -139,6 +139,28 @@ bool EtfArduinoService::SetSampleRate(UINT deviceId, DWORD sampleRate) {
 	return true;
 }
 
+bool EtfArduinoService::SetInputChannelList(UINT deviceId, std::vector<int> const& channels) {
+	// Formirati poruku koju treba poslati serveru
+	message_t  messageBuffer[MessageBufferSize];
+	memset(messageBuffer, 0, sizeof messageBuffer);
+	// The command code is the first part of the message
+	messageBuffer[0] = SET_INPUT_CHANNEL_LIST;
+	// The first parameter is the DeviceId
+	messageBuffer[1] = deviceId;
+	// The second parameter is the number of channels
+	size_t const sz = channels.size();
+	messageBuffer[2] = sz;
+	// The channel IDs follow:
+	for (size_t i = 0; i < sz; ++i) {
+		messageBuffer[3 + i] = channels[i];
+	}
+	// Send the message to the server
+	if (!SendMessage(messageBuffer, 3 + sz)) {
+		return false;
+	}
+	// This function does not expect a response from the device.
+	return true;
+}
 
 unsigned short EtfArduinoService::GetSingleValue(UINT deviceId) {
 	// Formirati poruku koju treba poslati serveru

@@ -27,6 +27,7 @@ public:
 	bool	StopAcquisition(UINT deviceId);
 	bool	SetAcquisitionBufferSize(UINT deviceId, DWORD bufferSize);
 	bool	SetSampleRate(UINT deviceId, DWORD sampleRate);
+	bool	SetInputChannelList(UINT deviceId, std::vector<int> const& channels)
 	bool	CheckDeviceRegistered(UINT deviceId, LPTSTR serialPortName);
 	bool	RegisterDevice(UINT& deviceId, LPCWSTR serialPortName);
 	bool	GetRegisteredDeviceIds(std::vector<UINT>& deviceIds);
@@ -63,6 +64,7 @@ private:
 
 	static message_t const	SET_ACQUISITION_BUFFER_SIZE = 10;
 	static message_t const	SET_SAMPLE_RATE = 11;
+	static message_t const	SET_INPUT_CHANNEL_LIST = 12;
 
 	static message_t const	SEND_DIGITAL_VALUE = 20;
 
