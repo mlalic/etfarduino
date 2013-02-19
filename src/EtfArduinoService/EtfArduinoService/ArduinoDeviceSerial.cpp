@@ -94,12 +94,13 @@ bool ArduinoDeviceSerial::StopAcquisition() {
 	return true;
 }
 
-ArduinoDeviceSerial::response_t ArduinoDeviceSerial::GetSingleValue() {
+ArduinoDeviceSerial::response_t ArduinoDeviceSerial::GetSingleValue(int channelId) {
 	if (acquisitionActive) {
 		return -1;
 	}
-	char buffer[1];
+	char buffer[2];
 	buffer[0] = GET_SINGLE_VALUE;
+	buffer[1] = channelId;		// Truncate to the least significant byte
 	{
 		// Critical section
 		Lock lock(cs);

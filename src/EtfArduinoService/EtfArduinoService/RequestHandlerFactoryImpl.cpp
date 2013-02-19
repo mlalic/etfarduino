@@ -50,7 +50,7 @@ std::auto_ptr<RequestHandler> RequestHandlerFactoryImpl::GetRequestHandler(
 			ArduinoDevice* device = devices.Find(buffer[1]);
 			if (device == 0)
 				break;
-			requestHandler = new GetSingleValueRequestHandler(*device, pipe);
+			requestHandler = new GetSingleValueRequestHandler(*device, pipe, buffer[2]);
 			break;
 		}
 		case CHECK_DEVICE_REGISTERED: {

@@ -274,8 +274,9 @@ STDMETHODIMP CetfarduinoAin::ChildChange(DWORD typeofchange, NESTABLEPROP* pChan
 			// Maximum number of channels was reached -- unable to add more.
 			return Error(CComBSTR("etfarduino: Maximum number of channels reached, unable to add more."));
 		}
-		// For now the ID given in the addchannel call is ignored.
-		// TODO: Only allow channel IDs 0 and 1...
+		if (pChan->HwChan < 0 || pChan->HwChan > 1) {
+			return Error(CComBSTR("etfarduino: Only channels 0 and 1 are supported."));
+		}
 	}
 	if (typeofchange & END_CHANGE) {
 		// Update the number of channels that have been added, by querying the engine
@@ -334,7 +335,7 @@ STDMETHODIMP CetfarduinoAin::SetChannelProperty(long UserVal, tagNESTABLEPROP* p
 /////////////////////////////////////////////////////////////////////////////
 HRESULT CetfarduinoAin::GetSingleValue(int chan, RawDataType *value)
 {
-	*value = (RawDataType) service.GetSingleValue(DeviceId);
+	*value = (RawDataType) service.GetSingleValue(DeviceId, chan);
 	return S_OK;
 } // end of GetSingleValue()
 
@@ -365,10 +366,14 @@ STDMETHODIMP CetfarduinoAin::Start()
 	if (!service.SetAcquisitionBufferSize(DeviceId, m_engineBufferSamples * _nChannels)) {
 		return CComCoClass<ImwDevice>::Error(CComBSTR("etfarduino: Problem configuring the device for acquisition, buffer size."));
 	}
+	std::vector<int> channels(_nChannels);
+	// TODO: Add channel IDs.
+	if (!service.SetInputChannelList(DeviceId, channels)) {
+		return CComCoClass<ImwDevice>::Error(CComBSTR("etfarduino: Problem configuring the device for acquisition, channels."));
+	}
 	if (!service.SetSampleRate(DeviceId, pSampleRate * _nChannels)) {
 		return CComCoClass<ImwDevice>::Error(CComBSTR("etfarduino: Problem configuring the device for acquisition, sample rate."));
 	}
-	// :TODO: SetChannelNumber
 
 	return S_OK;
 }

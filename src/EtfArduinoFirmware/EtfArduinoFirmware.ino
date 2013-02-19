@@ -80,6 +80,7 @@ void loop() {
     switch (code) {
       case '1': {
         TCNT1 = 0;
+        ADMUX &= ~(1 << MUX0);    // set the first channel to A0
         TIMSK1 |= (1 << OCIE1A);  // enable timer compare interrupt        
         return;
       }
@@ -105,6 +106,11 @@ void loop() {
       }
       case '4': {
         // GET_SINGLE_VALUE
+        while (Serial.available() < 1) ;
+        channelMask = Serial.read();
+        digitalWrite(13, channelMask);
+        ADMUX &= ~(1 << MUX0);
+        ADMUX |= (channelMask << MUX0);
         // Do a conversion
         ADCSRA |= (1 << ADSC);    // Start conversion
         // This blocks for 13us = > 208 cycles wasted

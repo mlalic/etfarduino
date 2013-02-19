@@ -20,7 +20,7 @@ public:
 
 	bool StartAcquisition();
 	bool StopAcquisition();
-	response_t GetSingleValue();
+	response_t GetSingleValue(int channelId);
 	bool SetSampleRate(int sampleRate);
 	bool SetInputChannelList(std::vector<int> const& channels);
 	bool SetBufferSize(int bufferSize);

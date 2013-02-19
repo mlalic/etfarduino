@@ -52,10 +52,11 @@ private:
 class GetSingleValueRequestHandler :
 	public RequestHandler {
 public:
-	GetSingleValueRequestHandler(ArduinoDevice& device, std::tr1::shared_ptr<PipeCommunicator> pipe);
+	GetSingleValueRequestHandler(ArduinoDevice& device, std::tr1::shared_ptr<PipeCommunicator> pipe, int channelId);
 	Status run();
 private:
 	ArduinoDevice& device;
+	int const channelId;
 };
 // -------------------------------
 // Check Device Registered Handler

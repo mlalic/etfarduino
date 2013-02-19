@@ -85,14 +85,15 @@ RequestHandler::Status StopAcquisitionRequestHandler::run() {
 // Get Single Value Handler
 // -------------------------
 GetSingleValueRequestHandler::GetSingleValueRequestHandler(ArduinoDevice& device,
-														   std::tr1::shared_ptr<PipeCommunicator> pipe) :
-  RequestHandler(pipe), device(device) {
+														   std::tr1::shared_ptr<PipeCommunicator> pipe,
+														   int channelId) :
+  RequestHandler(pipe), device(device), channelId(channelId) {
 	  // Empty
 }
 
 RequestHandler::Status GetSingleValueRequestHandler::run() {
 	// Elicit the response from the device
-	ArduinoDevice::response_t value = device.GetSingleValue();
+	ArduinoDevice::response_t value = device.GetSingleValue(channelId);
 	// Write the reply to the pipe.
 	if (pipe->SendMessage(&value, sizeof(ArduinoDevice::response_t)))
 		return Status::OK;

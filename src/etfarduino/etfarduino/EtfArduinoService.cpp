@@ -162,22 +162,24 @@ bool EtfArduinoService::SetInputChannelList(UINT deviceId, std::vector<int> cons
 	return true;
 }
 
-unsigned short EtfArduinoService::GetSingleValue(UINT deviceId) {
+unsigned short EtfArduinoService::GetSingleValue(UINT deviceId, int channelId) {
 	// Formirati poruku koju treba poslati serveru
 	message_t  messageBuffer[MessageBufferSize];
 	memset(messageBuffer, 0, sizeof messageBuffer);
 	// Prvi je kod komande
 	messageBuffer[0] = GET_SINGLE_VALUE;
 	// Zatim slijede parametri:
-	// Prvi parametar je DeviceId
+	// The first parameter is the DeviceId
 	messageBuffer[1] = deviceId;
+	// The channel from which to get the value
+	messageBuffer[2] = channelId;
 	// Odgovor je jedna vrijednost (2 bytea)
 	unsigned short value = 0;
 	DWORD numReturnBytes;
 	if (hPipe == 0)
 		if (!OpenPipeConnection())
 			return false;
-	if (!TransactNamedPipe(hPipe, messageBuffer, 2 * sizeof(message_t), &value, sizeof value, &numReturnBytes, NULL)) {
+	if (!TransactNamedPipe(hPipe, messageBuffer, 3 * sizeof(message_t), &value, sizeof value, &numReturnBytes, NULL)) {
 		// Fail
 	}
 	if (numReturnBytes != sizeof value) {

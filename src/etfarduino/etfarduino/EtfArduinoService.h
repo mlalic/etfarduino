@@ -27,11 +27,11 @@ public:
 	bool	StopAcquisition(UINT deviceId);
 	bool	SetAcquisitionBufferSize(UINT deviceId, DWORD bufferSize);
 	bool	SetSampleRate(UINT deviceId, DWORD sampleRate);
-	bool	SetInputChannelList(UINT deviceId, std::vector<int> const& channels)
+	bool	SetInputChannelList(UINT deviceId, std::vector<int> const& channels);
 	bool	CheckDeviceRegistered(UINT deviceId, LPTSTR serialPortName);
 	bool	RegisterDevice(UINT& deviceId, LPCWSTR serialPortName);
 	bool	GetRegisteredDeviceIds(std::vector<UINT>& deviceIds);
-	unsigned short	GetSingleValue(UINT deviceId);
+	unsigned short	GetSingleValue(UINT deviceId, int channelId);
 	bool	SendDigitalValue(UINT deviceId, int line, int value);
 	bool	PutSingleValue(UINT deviceId, int channel, int value);
 protected:
