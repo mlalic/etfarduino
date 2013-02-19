@@ -37,7 +37,8 @@ Usage
 To use this software follow these steps:
 - Compile and upload the Arduino sketch (EtfArduinoFirmware) using the Arduino IDE;
 - Start the EtfArduinoService.exe application;
-- Register the adaptor in the MATLAB environment by running the command `daqregister 'path/to/etfarduino.dll'`;
+- Run MATLAB in an elevated privilege mode (Run as Administrator) and register the adaptor in the MATLAB environment by running the command `daqregister 'path/to/etfarduino.dll'`;
+- Restart MATLAB with standard user privileges;
 - Run the EtfArduinoConfig application and register the connected Arduino as an acquisition device by clicking the button.
 
 It is now possible to use the connected Arduino device as any other acquisition device, such as MCC or National Instruments
@@ -55,6 +56,6 @@ For example:
 Notes
 -----
 
-Currently, only one analog input and analog output channel is supported and they use the A0 pin and digital pin 3, respectively. Analog input and output can work in parallel.
+Currently, two analog input channels (on pins A0 and A1) and one analog output channel (on the digital pin 3) are supported. Analog input and output can work in parallel.
 
 Using the EtfArduinoConfig it is possible to register multiple Arduino boards which are able to perform acquisition tasks in parallel.
