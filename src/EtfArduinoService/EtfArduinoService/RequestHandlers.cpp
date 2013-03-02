@@ -85,14 +85,15 @@ RequestHandler::Status StopAcquisitionRequestHandler::run() {
 // Get Single Value Handler
 // -------------------------
 GetSingleValueRequestHandler::GetSingleValueRequestHandler(ArduinoDevice& device,
-														   std::tr1::shared_ptr<PipeCommunicator> pipe) :
-  RequestHandler(pipe), device(device) {
+														   std::tr1::shared_ptr<PipeCommunicator> pipe,
+														   int channelId) :
+  RequestHandler(pipe), device(device), channelId(channelId) {
 	  // Empty
 }
 
 RequestHandler::Status GetSingleValueRequestHandler::run() {
 	// Elicit the response from the device
-	ArduinoDevice::response_t value = device.GetSingleValue();
+	ArduinoDevice::response_t value = device.GetSingleValue(channelId);
 	// Write the reply to the pipe.
 	if (pipe->SendMessage(&value, sizeof(ArduinoDevice::response_t)))
 		return Status::OK;
@@ -215,6 +216,22 @@ SetSampleRateRequestHandler::SetSampleRateRequestHandler(ArduinoDevice& device,
 RequestHandler::Status SetSampleRateRequestHandler::run() {
 	printf("Setting sample rate\n");
 	if (device.SetSampleRate(sampleRate))
+		return Status::OK;
+	else
+		return Status::FAIL;
+}
+// --------------------------
+// Set Input Channels Handler
+// --------------------------
+SetInputChannelsRequestHandler::SetInputChannelsRequestHandler(ArduinoDevice& device,
+														 std::tr1::shared_ptr<PipeCommunicator> pipe,
+														 std::vector<int> const& channels) :
+  RequestHandler(pipe), device(device), channels(channels) {
+	  // Empty
+}
+RequestHandler::Status SetInputChannelsRequestHandler::run() {
+	printf("Setting input channels...\n");
+	if (device.SetInputChannelList(channels))
 		return Status::OK;
 	else
 		return Status::FAIL;

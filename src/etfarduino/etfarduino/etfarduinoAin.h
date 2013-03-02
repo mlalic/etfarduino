@@ -131,12 +131,14 @@ private:
 	// Private member functions
 	// ------------------------
 	HRESULT FindRange(double low, double high, Range*& range);
+	void CalculateSampleRate(double newSampleRate);
 	// ----------------------
 	// Private static members
 	// ----------------------
 	static	long	const	USER_INPUTRANGE		=	1;
 	// Identifikacija Ain subsystema
 	static	UINT	const	subsystemId			=	1;
+	static int const MAX_CHANNELS = 2;
 
 };
 

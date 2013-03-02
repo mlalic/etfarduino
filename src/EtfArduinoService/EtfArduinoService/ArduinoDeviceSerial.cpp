@@ -11,7 +11,7 @@
 #include "Lock.h"
 #include <tchar.h>
 ArduinoDeviceSerial::ArduinoDeviceSerial(UINT deviceId, LPCTSTR serialPortName) :
-  ArduinoDevice(deviceId), tickFrequency(250000), acquisitionActive(0), serial(serialPortName) {
+  ArduinoDevice(deviceId), tickFrequency(250000), acquisitionActive(0), maxInputChannels(2), serial(serialPortName) {
 	  printf("Creating arduino device...");
 	  memset(ArduinoDeviceSerial::serialPortName,
 		     0,
@@ -24,7 +24,7 @@ ArduinoDeviceSerial::ArduinoDeviceSerial(UINT deviceId, LPCTSTR serialPortName) 
 
 ArduinoDeviceSerial::ArduinoDeviceSerial(UINT deviceId, LPCWSTR serialPortName, DWORD bufferSize) :
   ArduinoDevice(deviceId, bufferSize), tickFrequency(250000), acquisitionActive(0),
-  serial(serialPortName) {
+  maxInputChannels(2), serial(serialPortName) {
 	  memset(ArduinoDeviceSerial::serialPortName,
 		     0,
 			 sizeof ArduinoDeviceSerial::serialPortName);
@@ -46,7 +46,7 @@ bool ArduinoDeviceSerial::StartAcquisition() {
 	}
 	// Create a message to be sent
 	char buffer[1];
-	buffer[0] = '1';
+	buffer[0] = START_ACQUISITION;
 	// Now send it
 	// SerialCommunicator serial(serialPortName);
 	{
@@ -81,7 +81,7 @@ bool ArduinoDeviceSerial::StartAcquisition() {
 		}
 	}
 	// Send a stop message to arduino
-	buffer[0] = '2';
+	buffer[0] = STOP_ACQUISITION;
 	bool status = serial.SendMessage(buffer, sizeof buffer);
 	acquisitionActive = 0;
 	return status;
@@ -94,12 +94,13 @@ bool ArduinoDeviceSerial::StopAcquisition() {
 	return true;
 }
 
-ArduinoDeviceSerial::response_t ArduinoDeviceSerial::GetSingleValue() {
+ArduinoDeviceSerial::response_t ArduinoDeviceSerial::GetSingleValue(int channelId) {
 	if (acquisitionActive) {
 		return -1;
 	}
-	char buffer[1];
-	buffer[0] = '4';
+	char buffer[2];
+	buffer[0] = GET_SINGLE_VALUE;
+	buffer[1] = channelId;		// Truncate to the least significant byte
 	{
 		// Critical section
 		Lock lock(cs);
@@ -144,7 +145,7 @@ bool ArduinoDeviceSerial::SetSampleRate(int sampleRate) {
 	int const period = 4 * factor;
 	// Send the period
 	char buffer[1 + 4];
-	buffer[0] = '3';
+	buffer[0] = SET_SAMPLE_RATE;
 	buffer[1] = period;			// Truncated to least significant byte
 	buffer[2] = period >> 8;
 	buffer[3] = period >> 16;
@@ -157,6 +158,33 @@ bool ArduinoDeviceSerial::SetSampleRate(int sampleRate) {
 			return false;
 		}
 //		SerialCommunicator serial(serialPortName);
+		if (!serial.SendMessage(buffer, sizeof buffer)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool ArduinoDeviceSerial::SetInputChannelList(std::vector<int> const& channels) {
+	if (acquisitionActive) {
+		return false;
+	}
+	char buffer[4];
+	buffer[0] = SET_INPUT_CHANNEL_LIST;
+	size_t const sz = channels.size() > maxInputChannels ?
+					  maxInputChannels :
+					  channels.size();
+	buffer[1] = sz;
+	for (size_t i = 0; i < sz; ++i) {
+		buffer[2 + i] = channels[i];		// Truncates to the least significant byte
+	}
+	{
+		// Critical section
+		Lock lock(cs);
+		// Double checked locking
+		if (acquisitionActive) {
+			return false;
+		}
 		if (!serial.SendMessage(buffer, sizeof buffer)) {
 			return false;
 		}
@@ -186,7 +214,7 @@ bool ArduinoDeviceSerial::SetBufferSize(int bufferSize) {
 
 bool ArduinoDeviceSerial::SendDigitalValue(int line, int value) {
 	char buffer[3];
-	buffer[0] = '5';
+	buffer[0] = SEND_DIGITAL_VALUE;
 	buffer[1] = line;
 	buffer[2] = value ? 1 : 0;
 	printf("Buffer: ");
@@ -202,7 +230,7 @@ bool ArduinoDeviceSerial::SendDigitalValue(int line, int value) {
 
 bool ArduinoDeviceSerial::PutSingleValue(int channel, int value) {
 	unsigned char buffer[3];
-	buffer[0] = '6';
+	buffer[0] = PUT_SINGLE_VALUE;
 	buffer[1] = channel;
 	buffer[2] = value;
 	{
