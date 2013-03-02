@@ -52,10 +52,11 @@ private:
 class GetSingleValueRequestHandler :
 	public RequestHandler {
 public:
-	GetSingleValueRequestHandler(ArduinoDevice& device, std::tr1::shared_ptr<PipeCommunicator> pipe);
+	GetSingleValueRequestHandler(ArduinoDevice& device, std::tr1::shared_ptr<PipeCommunicator> pipe, int channelId);
 	Status run();
 private:
 	ArduinoDevice& device;
+	int const channelId;
 };
 // -------------------------------
 // Check Device Registered Handler
@@ -124,6 +125,21 @@ public:
 private:
 	ArduinoDevice& device;
 	int const sampleRate;
+};
+// --------------------------
+// Set Input Channels Handler
+// --------------------------
+class SetInputChannelsRequestHandler :
+	public RequestHandler {
+public:
+	SetInputChannelsRequestHandler(
+		ArduinoDevice& device,
+		std::tr1::shared_ptr<PipeCommunicator> pipe,
+		std::vector<int> const& channels);
+	Status run();
+private:
+	ArduinoDevice& device;
+	std::vector<int> channels;
 };
 // --------------------------
 // Send Digital Value Handler

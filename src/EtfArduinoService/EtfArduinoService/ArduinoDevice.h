@@ -23,8 +23,9 @@ public:
 
 	virtual bool StartAcquisition() = 0;
 	virtual bool StopAcquisition() = 0;
-	virtual response_t GetSingleValue() = 0;
+	virtual response_t GetSingleValue(int channelId) = 0;
 	virtual bool SetSampleRate(int sampleRate) = 0;
+	virtual bool SetInputChannelList(std::vector<int> const& channels) = 0;
 	virtual bool SetBufferSize(int bufferSize) = 0;
 	virtual bool SendDigitalValue(int line, int value) = 0;
 	virtual bool PutSingleValue(int channel, int value) = 0;

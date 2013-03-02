@@ -28,7 +28,8 @@ bool SerialCommunicator::Purge() {
 	if (hSerial == 0) {
 		return false;
 	}
-	PurgeComm(hSerial, PURGE_RXCLEAR | PURGE_RXABORT);	
+	return 
+		PurgeComm(hSerial, PURGE_RXCLEAR | PURGE_RXABORT) == TRUE;
 }
 
 bool SerialCommunicator::SendMessage(LPCVOID buffer, DWORD bufferSize) {

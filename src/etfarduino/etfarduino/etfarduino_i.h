@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0500 */
-/* at Sun Sep 30 20:21:45 2012
+/* at Tue Feb 19 01:14:08 2013
  */
 /* Compiler settings for .\etfarduino.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)
