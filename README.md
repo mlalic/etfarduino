@@ -11,7 +11,7 @@ The project is published under the MIT license.
 Download
 --------
 
-A zip bundle containing the compiled x86 binaries and Arduino source can be downloaded from [this](https://s3-eu-west-1.amazonaws.com/mlalic-etfarduino/etfarduino.zip) link.
+A zip bundle containing the compiled x86 binaries and Arduino source can be downloaded from [this](https://github.com/mlalic/etfarduino/releases/download/v1.0.0/etfarduino-v1.0.0.zip) link.
 
 Components
 ----------
